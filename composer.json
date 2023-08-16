@@ -1,0 +1,35 @@
+{
+    "name": "fdmind/ignore-query-strings",
+    "description": "If your website has static caching on, and you drive traffic to it from social media, Google Ads and other sources that add query string parameters to the URL, there is a chance that each time new user visits a page, it will not be served from cache, but will be generated from scratch. This is because the URL with query string parameters is treated as a different URL from the one without query string parameters.",
+    "keywords": [
+        "statamic",
+        "4dmind",
+        "static cacheing"
+    ],
+    "require": {
+        "php": "^8.0",
+        "statamic/cms": "^3.2|^4.0"
+    },
+    "homepage": "https://github.com/4dmind/ignore-query-strings.git",
+    "license": "MIT",
+    "authors": [{
+        "name": "4DMIND.COM",
+        "email": "hi@4dmind.com"
+    }],
+    "autoload": {
+        "psr-4": {
+            "Fdmind\\IgnoreQueryStrings\\": "src"
+        }
+    },
+    "extra": {
+        "statamic": {
+            "name": "Ignore Query Strings",
+            "description": "If your website has static caching on, and you drive traffic to it from social media, Google Ads and other sources that add query string parameters to the URL, there is a chance that each time new user visits a page, it will not be served from cache, but will be generated from scratch. This is because the URL with query string parameters is treated as a different URL from the one without query string parameters."
+        },
+        "laravel": {
+            "providers": [
+                "Fdmind\\IgnoreQueryStrings\\ServiceProvider"
+            ]
+        }
+    }
+}
