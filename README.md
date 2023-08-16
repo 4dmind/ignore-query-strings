@@ -6,6 +6,8 @@ You could always set `'ignore_query_strings' => true`, but that would mean that 
 
 This addon allows to have both: ignore query string parameters for caching purposes, but still be able to use them in your templates.
 
+> DISCLAIMER: Addon will not work if you have full static caching on and Nginx rules set up to serve static html files directly.
+
 ## How to Install
 
 You can search for this addon in the `Tools > Addons` section of the Statamic control panel and click **install**, or run the following command from your project root:
