@@ -11,7 +11,7 @@ This addon allows to have both: ignore query string parameters for caching purpo
 You can search for this addon in the `Tools > Addons` section of the Statamic control panel and click **install**, or run the following command from your project root:
 
 ``` bash
-composer require fdm/igonre-query-strings
+composer require fdmind/igonre-query-strings
 ```
 
 ## How to Use
