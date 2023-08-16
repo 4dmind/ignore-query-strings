@@ -1,0 +1,19 @@
+{
+    "name": "fdmind/ignore-query-strings",
+    "autoload": {
+        "psr-4": {
+            "Fdmind\\IgnoreQueryStrings\\": "src"
+        }
+    },
+    "extra": {
+        "statamic": {
+            "name": "Ignore Query Strings",
+            "description": "Ignore Query Strings addon"
+        },
+        "laravel": {
+            "providers": [
+                "Fdmind\\IgnoreQueryStrings\\ServiceProvider"
+            ]
+        }
+    }
+}
