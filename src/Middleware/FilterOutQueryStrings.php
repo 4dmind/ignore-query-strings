@@ -3,7 +3,6 @@
 namespace Fdmind\IgnoreQueryStrings\Middleware;
 
 use Illuminate\Http\Request;
-use Statamic\Tags\In;
 use Symfony\Component\HttpFoundation\InputBag;
 use Closure;
 
@@ -12,20 +11,22 @@ class FilterOutQueryStrings
     private $cachingStrategy;
     private $isStaticCachingOn;
     private $parametersToIgnore;
+    private $mode;
 
     public function __construct()
     {
         $this->cachingStrategy = config('statamic.static_caching.strategy');
-        $this->isStaticCachingOn = !empty($cachingStrategy) && ($cachingStrategy == 'half' || $cachingStrategy == 'full');
+        $this->isStaticCachingOn = $this->cachingStrategy === 'half' || $this->cachingStrategy === 'full';
+        $this->mode = config('ignore-query-strings.mode');
         $this->parametersToIgnore = config('ignore-query-strings.parameters');
-
     }
 
     public function handle(Request $request, Closure $next)
     {
-//        if (!$this->isStaticCachingOn) {
-//            return $next($request);
-//        }
+
+        if (!$this->isStaticCachingOn) {
+            return $next($request);
+        }
 
         $alteredRequest = $this->removeRequestQueryParams($request);
         return $next($alteredRequest);
@@ -37,11 +38,12 @@ class FilterOutQueryStrings
         $requestUri = $request->getUri();
 
         foreach ($requestQueryParams as $key => $value) {
-            if (in_array($key, $this->parametersToIgnore)) {
+            $regexPattern = "/&?" . $key . "=(.*?(?=[&])|.*)/";
+            if ($this->mode == 'deny' && in_array($key, $this->parametersToIgnore)) {
                 unset($requestQueryParams[$key]);
-                $regexPattern = "/&?" . $key . "=(.*?(?=[&])|.*)/";
-                $matches = [];
-                $match = preg_match($regexPattern, $requestUri, $matches);
+                $requestUri = preg_replace($regexPattern, '', $requestUri);
+            } elseif($this->mode == 'allow' && !in_array($key, $this->parametersToIgnore)) {
+                unset($requestQueryParams[$key]);
                 $requestUri = preg_replace($regexPattern, '', $requestUri);
             }
         }

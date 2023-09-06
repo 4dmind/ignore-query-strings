@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'mode' => 'allow', // allow or deny
     'parameters' => [
         'utm_campaign',
         'utm_content',

@@ -18,4 +18,4 @@ composer require fdmind/igonre-query-strings
 
 ## How to Use
 
-Addon comes with `ignore-query-strings.php` config file, where you can specify which query string parameters to ignore. By default, it is set to ignore most popular parameters, but you can remove and add your own.
+Addon comes with `ignore-query-strings.php` config file, where you can specify which query string parameters Statamic should allow or deny. By default, it is set to allow only most popular parameters, but you can remove and add your own.
