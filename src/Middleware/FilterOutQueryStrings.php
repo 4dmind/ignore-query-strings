@@ -10,15 +10,36 @@ class FilterOutQueryStrings
 {
     private $cachingStrategy;
     private $isStaticCachingOn;
-    private $parametersToIgnore;
+    private $queryStringParameters;
+    private $excludedPaths;
     private $mode;
+
 
     public function __construct()
     {
         $this->cachingStrategy = config('statamic.static_caching.strategy');
         $this->isStaticCachingOn = $this->cachingStrategy === 'half' || $this->cachingStrategy === 'full';
         $this->mode = config('ignore-query-strings.mode');
-        $this->parametersToIgnore = config('ignore-query-strings.parameters');
+
+        $this->defaultQueryStringParameters = [
+            'page',
+            'q',
+        ];
+        $this->queryStringParameters = config('ignore-query-strings.parameters');
+
+
+        $glideRoute = trim(config('statamic.assets.image_manipulation.route'), '/');
+        $cpRoute = trim(config('statamic.cp.route'), '/');
+
+        $this->defaultExcludedPaths = [
+          $cpRoute . '/*',            // Control Panel (from config)
+          $glideRoute . '/*',         // Glide image manipulation (from config)
+          'graphql',                  // GraphQL endpoint
+          'graphql/*',                // GraphQL sub-routes
+          'api/*',                    // API endpoints
+        ];
+
+        $this->excludedPaths = array_merge($this->defaultExcludedPaths, config('ignore-query-strings.excluded_paths'));
     }
 
     public function handle(Request $request, Closure $next)
@@ -26,6 +47,10 @@ class FilterOutQueryStrings
 
         if (!$this->isStaticCachingOn) {
             return $next($request);
+        }
+
+        foreach($this->excludedPaths as $path) {
+          if($request->is($path)) return $next($request);
         }
 
         $alteredRequest = $this->removeRequestQueryParams($request);
@@ -38,13 +63,24 @@ class FilterOutQueryStrings
         $requestUri = $request->getUri();
 
         foreach ($requestQueryParams as $key => $value) {
-            $regexPattern = "/&?" . $key . "=(.*?(?=[&])|.*)/";
-            if ($this->mode == 'deny' && in_array($key, $this->parametersToIgnore)) {
+
+            if (in_array($key, $this->defaultQueryStringParameters)) {
+                continue;
+            }
+
+
+            $regexPattern = "/&?" . preg_quote($key) . "=(.*?(?=[&])|.*)/";
+
+            if ($this->mode == 'deny' && in_array($key, $this->queryStringParameters)) {
+
                 unset($requestQueryParams[$key]);
                 $requestUri = preg_replace($regexPattern, '', $requestUri);
-            } elseif($this->mode == 'allow' && !in_array($key, $this->parametersToIgnore)) {
+
+            } elseif($this->mode == 'allow' && !in_array($key, $this->queryStringParameters)) {
+
                 unset($requestQueryParams[$key]);
                 $requestUri = preg_replace($regexPattern, '', $requestUri);
+
             }
         }
 
