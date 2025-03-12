@@ -23,11 +23,8 @@ class FilterOutQueryStrings
 
     public function handle(Request $request, Closure $next)
     {
-        if (!$this->isStaticCachingOn) {
-            return $next($request);
-        }
 
-        if($request->is('cp/*') || $request->is('api/*') || $request->is('graphql/*')) {
+        if (!$this->isStaticCachingOn) {
             return $next($request);
         }
 
